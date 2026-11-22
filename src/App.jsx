@@ -4,6 +4,9 @@ import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import AboutPage from './components/AboutPage'
 import ContactsPage from './components/ContactsPage'
+import OrderButton from './components/OrderButton'
+import OrderDrawer from './components/OrderDrawer'
+import { CartProvider } from './context/CartProvider'
 import DrinkDetail from './components/DrinkDetail'
 import Header from './components/Header'
 import LocationsPage from './components/LocationsPage'
@@ -424,6 +427,7 @@ function App() {
   }, [])
 
   return (
+    <CartProvider>
     <div
       ref={rootRef}
       className="relative h-[100svh] w-full overflow-hidden bg-[#F4EEFA]"
@@ -619,7 +623,11 @@ function App() {
           onFullMenu={navigateToMenuPage}
         />
       )}
+
+      <OrderButton lang={lang} />
+      <OrderDrawer lang={lang} />
     </div>
+    </CartProvider>
   )
 }
 

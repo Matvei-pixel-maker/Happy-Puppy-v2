@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import Header from './Header'
 import PageBackdrop from './PageBackdrop'
 import { HITS, MENU_UI, MORE_SECTIONS } from '../data/menu'
+import { CART_UI } from '../data/cart'
+import { useCart } from '../context/useCart'
 
 const formatPrice = (value) => value.toFixed(2)
 
@@ -51,10 +53,23 @@ function OptionRow({ label, options, value, onChange }) {
 }
 
 function ItemModal({ item, lang, onClose }) {
+  const { addItem } = useCart()
   const [volumeIndex, setVolumeIndex] = useState(0)
   const [iceIndex, setIceIndex] = useState(2)
   const [sweetIndex, setSweetIndex] = useState(2)
   const [added, setAdded] = useState(false)
+
+  const handleAdd = () => {
+    addItem({
+      code: item.code,
+      name: item.name,
+      volume: volumes[Math.min(volumeIndex, volumes.length - 1)],
+      iceIndex,
+      sweetIndex,
+      price,
+    })
+    setAdded(true)
+  }
 
   useEffect(() => {
     const onKey = (event) => {
@@ -144,10 +159,10 @@ function ItemModal({ item, lang, onClose }) {
           </div>
           <button
             type="button"
-            onClick={() => setAdded(true)}
+            onClick={handleAdd}
             className="rounded-full bg-espresso px-7 py-3.5 text-[10px] uppercase tracking-[0.24em] text-cream transition-colors duration-300 hover:bg-caramel"
           >
-            {added ? MENU_UI.added[lang] : MENU_UI.add[lang]}
+            {added ? CART_UI.added[lang] : CART_UI.addToOrder[lang]}
           </button>
         </div>
       </div>

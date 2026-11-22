@@ -1,9 +1,26 @@
 import { useEffect, useState } from 'react'
 import { DETAIL_DRINKS, DETAIL_UI } from '../data/drinks'
+import { CART_UI } from '../data/cart'
+import { useCart } from '../context/useCart'
 
 function DrinkDetail({ index, lang, onClose, onFullMenu }) {
+  const { addItem } = useCart()
   const [entered, setEntered] = useState(false)
+  const [justAdded, setJustAdded] = useState(false)
   const drink = DETAIL_DRINKS[index]
+
+  const handleAdd = () => {
+    if (!drink) return
+    addItem({
+      code: drink.code,
+      name: drink.name,
+      volume: 400,
+      iceIndex: 2,
+      sweetIndex: 2,
+      price: drink.prices[0],
+    })
+    setJustAdded(true)
+  }
 
   useEffect(() => {
     const id = requestAnimationFrame(() => setEntered(true))
@@ -91,13 +108,22 @@ function DrinkDetail({ index, lang, onClose, onFullMenu }) {
             </div>
           </div>
 
-          <button
-            type="button"
-            onClick={onFullMenu}
-            className="mt-5 rounded-full bg-espresso px-8 py-3 text-[10px] uppercase tracking-[0.24em] text-cream transition-colors duration-300 hover:bg-caramel"
-          >
-            {DETAIL_UI.fullMenu[lang]}
-          </button>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={handleAdd}
+              className="rounded-full bg-caramel px-7 py-3 text-[10px] uppercase tracking-[0.2em] text-cream transition-colors duration-300 hover:bg-espresso"
+            >
+              {justAdded ? CART_UI.added[lang] : CART_UI.addToMyOrder[lang]}
+            </button>
+            <button
+              type="button"
+              onClick={onFullMenu}
+              className="rounded-full border border-espresso/20 px-7 py-3 text-[10px] uppercase tracking-[0.24em] text-espresso transition-colors duration-300 hover:border-caramel/60"
+            >
+              {DETAIL_UI.fullMenu[lang]}
+            </button>
+          </div>
         </aside>
       </div>
     </>
