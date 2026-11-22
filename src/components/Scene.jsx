@@ -1,6 +1,6 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
-import { ContactShadows, Environment, Lightformer, Sparkles } from '@react-three/drei'
+import { ContactShadows, Environment, Lightformer, Sparkles, useTexture } from '@react-three/drei'
 import * as THREE from 'three'
 import CupModel from './CupModel'
 
@@ -52,6 +52,10 @@ const CUP_Y = 0.2
 function Scene({ progressRef, textRefs, selectedDrink, onSelectDrink, scrollTargetOverrideRef }) {
   const { size } = useThree()
   const glowTexture = useGlowTexture()
+  // Единая текстура логотипа для всех шести наклеек — загружается один раз
+  const logoTexture = useTexture('/images/logo.png', (texture) => {
+    texture.colorSpace = THREE.SRGBColorSpace
+  })
 
   const cupRef1 = useRef(null)
   const cupRef2 = useRef(null)
@@ -270,7 +274,7 @@ function Scene({ progressRef, textRefs, selectedDrink, onSelectDrink, scrollTarg
         color="#ffe3c2"
       />
 
-      <Environment resolution={512} frames={1}>
+      <Environment resolution={256} frames={1}>
         <Lightformer
           intensity={5}
           color="#fff6e8"
@@ -354,6 +358,7 @@ function Scene({ progressRef, textRefs, selectedDrink, onSelectDrink, scrollTarg
             // слайде progress === i, поэтому компенсируем его, чтобы печать
             // стояла по центру лицевой стороны каждого стакана.
             labelRotation={0.45 - i * 1.1}
+            logoTexture={logoTexture}
           />
         ))}
       </Suspense>

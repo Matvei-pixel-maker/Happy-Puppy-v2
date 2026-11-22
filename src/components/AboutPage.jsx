@@ -30,6 +30,7 @@ function AboutPage({ lang, onChangeLang, onClose, onOpenMenu }) {
                   loop
                   muted
                   playsInline
+                  preload="none"
                 />
               </div>
             </div>

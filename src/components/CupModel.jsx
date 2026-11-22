@@ -1,10 +1,10 @@
 import { useMemo } from 'react'
-import { useGLTF, useTexture } from '@react-three/drei'
+import { useGLTF } from '@react-three/drei'
 import * as THREE from 'three'
 import cupData from '../data/cups6.json'
 
-const CUP_URL = '/models/cup.gltf'
-const LOGO_URL = '/images/logo.png'
+const CUP_URL = '/models/cup.glb'
+const DRACO_PATH = '/draco/'
 const TARGET_HEIGHT = 2.15
 
 // Компактная печать щенка: короткая дуга и небольшая высота, чтобы логотип
@@ -177,11 +177,9 @@ function CupModel({
   onPointerOut,
   onClick,
   labelRotation = 0,
+  logoTexture,
 }) {
-  const { scene } = useGLTF(CUP_URL)
-  const logoTexture = useTexture(LOGO_URL, (texture) => {
-    texture.colorSpace = THREE.SRGBColorSpace
-  })
+  const { scene } = useGLTF(CUP_URL, DRACO_PATH)
 
   const labelMaterial = useMemo(
     () =>
@@ -359,6 +357,6 @@ function CupModel({
   )
 }
 
-useGLTF.preload(CUP_URL)
+useGLTF.preload(CUP_URL, DRACO_PATH)
 
 export default CupModel

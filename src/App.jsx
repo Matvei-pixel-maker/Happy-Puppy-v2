@@ -154,20 +154,15 @@ const SCROLL_HINTS = {
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [showMenuPage, setShowMenuPage] = useState(false)
-  const [showAboutPage, setShowAboutPage] = useState(false)
-  const [showLocationsPage, setShowLocationsPage] = useState(false)
-  const [showContactsPage, setShowContactsPage] = useState(false)
+  // Единственный источник правды о текущей странице: 'home' | 'menu' | 'about' | 'locations' | 'contacts'
+  const [activePage, setActivePage] = useState('home')
+  const activePageRef = useRef('home')
   const [selectedDrink, setSelectedDrink] = useState(null)
   const selectedDrinkRef = useRef(null)
   const [lang, setLang] = useState('ru')
   const [activeIndex, setActiveIndex] = useState(0)
   const activeIndexRef = useRef(0)
   const menuOpenRef = useRef(false)
-  const menuPageOpenRef = useRef(false)
-  const aboutPageOpenRef = useRef(false)
-  const locationsPageOpenRef = useRef(false)
-  const contactsPageOpenRef = useRef(false)
   const rootRef = useRef(null)
   const scrollerRef = useRef(null)
   const trackRef = useRef(null)
@@ -195,57 +190,33 @@ function App() {
   }, [menuOpen])
 
   useEffect(() => {
-    menuPageOpenRef.current = showMenuPage
-  }, [showMenuPage])
-
-  useEffect(() => {
-    aboutPageOpenRef.current = showAboutPage
-  }, [showAboutPage])
-
-  useEffect(() => {
-    locationsPageOpenRef.current = showLocationsPage
-  }, [showLocationsPage])
-
-  useEffect(() => {
-    contactsPageOpenRef.current = showContactsPage
-  }, [showContactsPage])
+    activePageRef.current = activePage
+  }, [activePage])
 
   useEffect(() => {
     selectedDrinkRef.current = selectedDrink
   }, [selectedDrink])
 
-  const navigateToMenuPage = useCallback(() => {
+  // Единая точка перехода: всегда закрываем меню и безусловно ставим целевую страницу.
+  const navigateToPage = useCallback((page) => {
     menuOpenRef.current = false
     setMenuOpen(false)
+    selectedDrinkRef.current = null
     setSelectedDrink(null)
-    setShowMenuPage(true)
+    activePageRef.current = page
+    setActivePage(page)
   }, [])
 
-  const navigateToAboutPage = useCallback(() => {
-    menuOpenRef.current = false
-    setMenuOpen(false)
-    setShowAboutPage(true)
-  }, [])
-
-  const navigateToLocationsPage = useCallback(() => {
-    menuOpenRef.current = false
-    setMenuOpen(false)
-    setShowLocationsPage(true)
-  }, [])
-
-  const navigateToContactsPage = useCallback(() => {
-    menuOpenRef.current = false
-    setMenuOpen(false)
-    setShowContactsPage(true)
-  }, [])
+  const navigateToMenuPage = useCallback(() => navigateToPage('menu'), [navigateToPage])
+  const navigateToAboutPage = useCallback(() => navigateToPage('about'), [navigateToPage])
+  const navigateToLocationsPage = useCallback(() => navigateToPage('locations'), [navigateToPage])
+  const navigateToContactsPage = useCallback(() => navigateToPage('contacts'), [navigateToPage])
 
   const navigateHome = useCallback(() => {
     menuOpenRef.current = false
     setMenuOpen(false)
-    setShowMenuPage(false)
-    setShowAboutPage(false)
-    setShowLocationsPage(false)
-    setShowContactsPage(false)
+    activePageRef.current = 'home'
+    setActivePage('home')
 
     // Закрываем карточку детального просмотра, если она была открыта.
     selectedDrinkRef.current = null
@@ -312,10 +283,7 @@ function App() {
     const handleWheel = (event) => {
       if (
         menuOpenRef.current ||
-        menuPageOpenRef.current ||
-        aboutPageOpenRef.current ||
-        locationsPageOpenRef.current ||
-        contactsPageOpenRef.current ||
+        activePageRef.current !== 'home' ||
         selectedDrinkRef.current !== null
       ) return
 
@@ -339,10 +307,7 @@ function App() {
     const handleKeyDown = (event) => {
       if (
         menuOpenRef.current ||
-        menuPageOpenRef.current ||
-        aboutPageOpenRef.current ||
-        locationsPageOpenRef.current ||
-        contactsPageOpenRef.current ||
+        activePageRef.current !== 'home' ||
         selectedDrinkRef.current !== null
       ) return
 
@@ -427,7 +392,7 @@ function App() {
 
       <div className="fixed inset-0 z-[1]" aria-hidden="true">
         <Canvas
-          dpr={[1, 2]}
+          dpr={[1, 1.5]}
           gl={{
             antialias: true,
             alpha: true,
@@ -553,7 +518,8 @@ function App() {
         lang={lang}
       />
 
-      {showMenuPage && (
+      {/* Вложенные страницы — строго одна активная в каждый момент */}
+      {activePage === 'menu' && (
         <MenuPage
           lang={lang}
           onChangeLang={setLang}
@@ -562,7 +528,7 @@ function App() {
         />
       )}
 
-      {showAboutPage && (
+      {activePage === 'about' && (
         <AboutPage
           lang={lang}
           onChangeLang={setLang}
@@ -571,7 +537,7 @@ function App() {
         />
       )}
 
-      {showLocationsPage && (
+      {activePage === 'locations' && (
         <LocationsPage
           lang={lang}
           onChangeLang={setLang}
@@ -580,7 +546,7 @@ function App() {
         />
       )}
 
-      {showContactsPage && (
+      {activePage === 'contacts' && (
         <ContactsPage
           lang={lang}
           onChangeLang={setLang}
