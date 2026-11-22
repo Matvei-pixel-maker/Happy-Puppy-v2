@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Cormorant Garamond", "Times New Roman", Georgia, serif;
+
+  /* Тёплая пастельная палитра Happy Puppy */
+  --color-espresso: #2b1e17;
+  --color-ink: #2b1e17;
+  --color-coffee: #6e584c;
+  --color-cream: #fffbf6;
+  --color-caramel: #b87b4e;
+  --color-clay: #c98a6b;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  html {
+    background: #f4eefa;
+  }
+
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: #f4eefa;
+    color: var(--color-espresso);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: #e8d9f8;
+    color: var(--color-espresso);
+  }
+}
