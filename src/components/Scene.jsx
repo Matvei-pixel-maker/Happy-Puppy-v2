@@ -180,7 +180,9 @@ function Scene({ progressRef, textRefs, selectedDrink, onSelectDrink, scrollTarg
       const farScale = THREE.MathUtils.lerp(0.47, 0.39, distance)
       const scale = THREE.MathUtils.lerp(nearScale, farScale, far)
 
-      const baseX = offset * CUP_SPACING
+      // На узком экране соседи отодвигаются дальше, чтобы не наезжать
+      // на центральный стакан.
+      const baseX = offset * CUP_SPACING * (isMobile ? 1.18 : 1)
       const baseZ = far * absOffset * 1.5
       const baseRotationY =
         -0.45 + currentProgress * 1.1

@@ -164,6 +164,7 @@ function App() {
   const activeIndexRef = useRef(0)
   const menuOpenRef = useRef(false)
   const rootRef = useRef(null)
+  const sceneRef = useRef(null)
   const scrollerRef = useRef(null)
   const trackRef = useRef(null)
   const progressRef = useRef(0)
@@ -304,6 +305,51 @@ function App() {
       scroller.scrollLeft += delta * unit * WHEEL_MULTIPLIER
     }
 
+    // Свайпы пальцем листают карусель так же, как колесо. Короткий тап
+    // (<8px) не предотвращается — тогда клик по стакану работает как обычно.
+    let touchStartX = 0
+    let touchStartY = 0
+    let touchLastX = 0
+    let touchLastY = 0
+    let swiping = false
+
+    const canScroll = () =>
+      !menuOpenRef.current &&
+      activePageRef.current === 'home' &&
+      selectedDrinkRef.current === null
+
+    const handleTouchStart = (event) => {
+      if (!canScroll()) return
+      const touch = event.touches[0]
+      if (!touch) return
+      touchStartX = touchLastX = touch.clientX
+      touchStartY = touchLastY = touch.clientY
+      swiping = false
+    }
+
+    const handleTouchMove = (event) => {
+      if (!canScroll()) return
+      const touch = event.touches[0]
+      if (!touch) return
+
+      const totalX = touch.clientX - touchStartX
+      const totalY = touch.clientY - touchStartY
+
+      // Пока смещение меньше 8px — это тап, даём событиям клика пройти.
+      if (!swiping && Math.hypot(totalX, totalY) < 8) return
+
+      swiping = true
+      event.preventDefault()
+
+      const dx = touchLastX - touch.clientX
+      const dy = touchLastY - touch.clientY
+      const delta = Math.abs(dx) > Math.abs(dy) ? dx : dy
+
+      touchLastX = touch.clientX
+      touchLastY = touch.clientY
+      scroller.scrollLeft += delta * WHEEL_MULTIPLIER * 1.6
+    }
+
     const handleKeyDown = (event) => {
       if (
         menuOpenRef.current ||
@@ -331,11 +377,21 @@ function App() {
     window.addEventListener('wheel', handleWheel, { passive: false })
     window.addEventListener('keydown', handleKeyDown)
 
+    const scene = sceneRef.current
+    if (scene) {
+      scene.addEventListener('touchstart', handleTouchStart, { passive: false })
+      scene.addEventListener('touchmove', handleTouchMove, { passive: false })
+    }
+
     ScrollTrigger.refresh()
 
     return () => {
       window.removeEventListener('wheel', handleWheel)
       window.removeEventListener('keydown', handleKeyDown)
+      if (scene) {
+        scene.removeEventListener('touchstart', handleTouchStart)
+        scene.removeEventListener('touchmove', handleTouchMove)
+      }
       context.revert()
     }
   }, [lang, currentTexts])
@@ -390,7 +446,7 @@ function App() {
         ))}
       </div>
 
-      <div className="fixed inset-0 z-[1]" aria-hidden="true">
+      <div ref={sceneRef} className="fixed inset-0 z-[1]" aria-hidden="true">
         <Canvas
           dpr={[1, 1.5]}
           gl={{

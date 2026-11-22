@@ -30,9 +30,9 @@ function DrinkDetail({ index, lang, onClose, onFullMenu }) {
         aria-hidden="true"
       />
 
-      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[56] flex justify-center px-3 pb-3 sm:px-6 sm:pb-6">
+      <div className="pointer-events-none fixed inset-x-0 bottom-0 z-[56] flex justify-center px-4 pb-4 sm:px-6 sm:pb-6">
         <aside
-          className={`pointer-events-auto w-full max-w-2xl rounded-[28px] border border-[#E6D8C5] bg-[#FFFBF4]/92 px-7 py-5 shadow-[0_-24px_70px_rgba(43,30,23,0.16)] backdrop-blur-md transition-all duration-700 ease-out sm:px-10 sm:py-6 ${
+          className={`pointer-events-auto w-full max-w-2xl rounded-[28px] border border-[#E6D8C5] bg-[#FFFBF4]/92 px-5 py-5 shadow-[0_-24px_70px_rgba(43,30,23,0.16)] backdrop-blur-md transition-all duration-700 ease-out sm:px-10 sm:py-6 ${
             entered ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0'
           }`}
         >
